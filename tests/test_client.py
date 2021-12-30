@@ -1,10 +1,9 @@
 import os
-import sys
 from unittest.mock import Mock, patch
 
 import pytest
 
-from nonvex.client import client as client_lib
+from nonvex import client as client_lib
 
 
 @pytest.fixture(autouse=True)
@@ -42,8 +41,7 @@ def test_client(client, max_trials):
         assert len(kwargs) == 1
         assert kwargs["hidden_dim"] == 128
 
-        sys.argv = ["train", "train:main", "--hidden-dim", "128"]
-        results = client_lib.main()
+        results = client_lib.search("train:main", args=args)
         assert len(results) == max_trials
 
         for i in results:

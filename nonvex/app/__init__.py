@@ -21,6 +21,7 @@ class Searcher:
     output_dir: str
     project_name: str
     max_parallel_workers: int = 1
+    max_fails_per_worker: int = 5
 
     def __post_init__(self):
         hyperparameters = _load_hyperparameters()
@@ -32,6 +33,7 @@ class Searcher:
         self.oracle._set_project_dir(
             self.output_dir, self.project_name, overwrite=True
         )
+        self.failure_counts = {}
 
     def get_hyperparameters(self):
         hps = list(self.oracle.hyperparameters._hps.keys())
@@ -59,6 +61,7 @@ class Searcher:
         # reject this worker and send back an HTTP error
         if len(self.oracle.ongoing_trials) >= self.max_parallel_workers:
             return "Too many workers", 400
+        self.failure_counts[worker_id] = 0
 
         # create an initial trial for this worker
         return self.create_trial(worker_id)
@@ -69,6 +72,15 @@ class Searcher:
         except KeyError:
             trial_id = ""
         return make_response({"id": trial_id})
+
+    def cancel_trial(self, worker_id):
+        trial = self.oracle.ongoing_trials.pop(worker_id)
+        self.oracle.trials.pop(trial.trial_id)
+
+        self.failure_counts[worker_id] += 1
+        if self.failure_counts[worker_id] >= self.max_fails_per_worker:
+            return {"id": "", "hyperparameters": {}}
+        return self.create_trial(worker_id)
 
     def end_trial(self, trial_id, result, worker_id):
         """End an existing trial and potentially start a new one"""
@@ -87,6 +99,7 @@ def create_app(
     output_dir: str,
     project_name: str,
     max_parallel_workers: int,
+    max_fails_per_worker: int = 5,
 ):
     """Start a Nonvex hyperparameter server
 
@@ -117,6 +130,7 @@ def create_app(
         output_dir=output_dir,
         project_name=project_name,
         max_parallel_workers=max_parallel_workers,
+        max_fails_per_worker=max_fails_per_worker,
     )
 
     def end_trial(trial_id):
@@ -128,5 +142,6 @@ def create_app(
     app.route("/start/<worker_id>")(searcher.begin_worker)
     app.route("/ongoing/<worker_id>")(searcher.get_trial_id)
     app.route("/end/<trial_id>")(end_trial)
+    app.route("/cancel/<worker_id>")(searcher.cancel_trial)
 
     return app

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "train_example"
+version = "0.0.1"
+description = "Nonvex TensorFlow hyperparameter search example"
+authors = ["Alec Gunny <alec.gunny@gmail.com>"]
+
+[tool.poetry.scripts]
+train = "train_example:main"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.10"
+nonvex = {path = "../../", develop = true}
+
+tensorflow = "^2.6"
+keras-tuner = "^1.1"
+flask = "^2.0"
+
+requests = "^2.26"
+"hermes.typeo" = "^0.1"

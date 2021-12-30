@@ -9,10 +9,10 @@ nonvex = "nonvex.__init__:run_cli"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-keras-tuner = "^1.1"
 
 [tool.poetry.group.app.dependencies]
 tensorflow = "^2.6"
+keras-tuner = "^1.1"
 flask = "^2.0"
 
 [tool.poetry.group.client.dependencies]
