@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "nonvex"
+version = "0.0.1"
+description = "Flask app for DL hyperparameter optimization"
+authors = ["Alec Gunny <alec.gunny@gmail.com>"]
+
+[tool.poetry.scripts]
+nonvex = "nonvex.__init__:run_cli"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.10"
+keras-tuner = "^1.1"
+
+[tool.poetry.group.app.dependencies]
+tensorflow = "^2.6"
+flask = "^2.0"
+
+[tool.poetry.group.client.dependencies]
+requests = "^2.26"
+"hermes.typeo" = "^0.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^6.2"
+pytest-flask = "^1.2"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.16"
+
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.tox
+  | _build
+  | dist
+  | docs
+)/
+'''
+
+[tool.isort]
+known_first_party = ["nonvex"]
+multi_line_output = 3
+include_trailing_comma = true
