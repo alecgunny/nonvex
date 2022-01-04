@@ -6,8 +6,10 @@ from hermes.typeo import typeo
 @typeo
 def main(learning_rate: float, batch_size: int, hidden_dim: int):
     model = tf.keras.Sequential(
-        tf.keras.layers.Dense(hidden_dim, activation="relu"),
-        tf.keras.layers.Dense(1, activation="sigmoid"),
+        layers=[
+            tf.keras.layers.Dense(hidden_dim, activation="relu"),
+            tf.keras.layers.Dense(1, activation="sigmoid"),
+        ]
     )
 
     optimizer = tf.keras.optimizers.SGD(learning_rate)
@@ -19,8 +21,7 @@ def main(learning_rate: float, batch_size: int, hidden_dim: int):
 
     history = model.fit(
         X, y, validation_split=0.25, batch_size=batch_size, epochs=5
-    )
-    print(min(history["val_loss"]))
+    ).history
     return {"val_loss": min(history["val_loss"])}
 
 

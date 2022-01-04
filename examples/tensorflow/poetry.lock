@@ -401,6 +401,17 @@ optional = false
 python-versions = ">=3.8,<3.10"
 develop = true
 
+[package.dependencies]
+flask = {version = "^2.0", optional = true}
+"hermes.typeo" = {version = "^0.1", optional = true}
+keras-tuner = {version = "^1.1", optional = true}
+requests = {version = "^2.26", optional = true}
+tensorflow = {version = "^2.6", optional = true}
+
+[package.extras]
+app = ["tensorflow (>=2.6,<3.0)", "keras-tuner (>=1.1,<2.0)", "flask (>=2.0,<3.0)"]
+client = ["requests (>=2.26,<3.0)", "hermes.typeo (>=0.1,<0.2)"]
+
 [package.source]
 type = "directory"
 url = "../.."
@@ -531,7 +542,7 @@ pyasn1 = ">=0.4.6,<0.5.0"
 
 [[package]]
 name = "pygments"
-version = "2.10.0"
+version = "2.11.0"
 description = "Pygments is a syntax highlighting package written in Python."
 category = "main"
 optional = false
@@ -808,7 +819,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "17fbd21dc78f742956a2840a220325a390f029a32923bb93e3819d0b51d6f7d4"
+content-hash = "cf1686ef5e0db81605942a03384e35eac1273d297c5aec987e6eca7110654b48"
 
 [metadata.files]
 absl-py = [
@@ -1173,8 +1184,8 @@ pyasn1-modules = [
     {file = "pyasn1_modules-0.2.8-py3.7.egg", hash = "sha256:c29a5e5cc7a3f05926aff34e097e84f8589cd790ce0ed41b67aed6857b26aafd"},
 ]
 pygments = [
-    {file = "Pygments-2.10.0-py3-none-any.whl", hash = "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380"},
-    {file = "Pygments-2.10.0.tar.gz", hash = "sha256:f398865f7eb6874156579fdf36bc840a03cab64d1cde9e93d68f46a425ec52c6"},
+    {file = "Pygments-2.11.0-py3-none-any.whl", hash = "sha256:ac8098bfc40b8e1091ad7c13490c7f4797e401d0972e8fcfadde90ffb3ed4ea9"},
+    {file = "Pygments-2.11.0.tar.gz", hash = "sha256:51130f778a028f2d19c143fce00ced6f8b10f726e17599d7e91b290f6cbcda0c"},
 ]
 pyparsing = [
     {file = "pyparsing-3.0.6-py3-none-any.whl", hash = "sha256:04ff808a5b90911829c55c4e26f75fa5ca8a2f5f36aa3a51f68e27033341d3e4"},

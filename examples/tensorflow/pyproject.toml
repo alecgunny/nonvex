@@ -9,11 +9,4 @@ train = "train_example:main"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
-nonvex = {path = "../../", develop = true}
-
-tensorflow = "^2.6"
-keras-tuner = "^1.1"
-flask = "^2.0"
-
-requests = "^2.26"
-"hermes.typeo" = "^0.1"
+nonvex = {path = "../../", develop = true, extras = ["app", "client"]}

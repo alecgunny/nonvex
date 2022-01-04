@@ -96,6 +96,7 @@ def read_fn_kwargs(
 
     spoof_fn.__signature__ = inspect.Signature(parameters=parameters)
     spoof_fn.__doc__ = fn.__doc__
+    spoof_fn.__name__ = fn.__name__
 
     sys.argv = [None] + args
     return typeo(spoof_fn)()
@@ -136,7 +137,7 @@ def search(
             result = train_fn(**hyperparameters)
         except Exception:
             hyperparameters, trial_id = client.cancel_trial()
-            if trial_id == "":
+            if trial_id is None:
                 raise
             continue
 

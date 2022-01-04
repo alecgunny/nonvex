@@ -10,14 +10,18 @@ nonvex = "nonvex.__init__:run_cli"
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
 
-[tool.poetry.group.app.dependencies]
-tensorflow = "^2.6"
-keras-tuner = "^1.1"
-flask = "^2.0"
+# app dependencies
+tensorflow = {version = "^2.6", optional = true}
+keras-tuner = {version = "^1.1", optional = true}
+flask = {version = "^2.0", optional = true}
 
-[tool.poetry.group.client.dependencies]
-requests = "^2.26"
-"hermes.typeo" = "^0.1"
+# client dependencies
+requests = {version = "^2.26", optional = true}
+"hermes.typeo" = {version = "^0.1", optional = true}
+
+[tool.poetry.extras]
+app = ["tensorflow", "keras-tuner", "flask"]
+client = ["requests", "hermes.typeo"]
 
 [tool.poetry.group.test.dependencies]
 pytest = "^6.2"
