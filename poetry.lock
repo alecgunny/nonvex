@@ -998,7 +998,7 @@ client = ["requests", "hermes.typeo"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "81080f54ee8f1ae9d3e8003dc5509d9f485d7fadb738b95b525ccda8dafd743f"
+content-hash = "0d9bc5e7ce0f885fc74c0aae8c463362b6278df576bacba661c68df3c824f04d"
 
 [metadata.files]
 absl-py = [

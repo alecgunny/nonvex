@@ -28,11 +28,9 @@ requests = {version = "^2.26", optional = true}
 app = ["tensorflow", "keras-tuner", "flask", "libclang"]
 client = ["requests", "hermes.typeo"]
 
-[tool.poetry.group.test.dependencies]
+[tool.poetry.dev-dependencies]
 pytest = "^6.2"
 pytest-flask = "^1.2"
-
-[tool.poetry.group.dev.dependencies]
 pre-commit = "^2.16"
 
 
