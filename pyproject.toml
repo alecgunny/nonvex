@@ -13,7 +13,7 @@ python = ">=3.8,<3.10"
 # explicitly adding a libclang dependency for now
 # due to this transient issue
 # https://pythonissues.com/issues/2674747
-libclang = "<12.0.0"
+libclang = "<12.0"
 
 # app dependencies
 tensorflow = {version = "^2.6", optional = true}
