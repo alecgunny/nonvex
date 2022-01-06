@@ -428,7 +428,7 @@ name = "libclang"
 version = "11.1.0"
 description = "Clang Python Bindings, mirrored from the official LLVM repo: https://github.com/llvm/llvm-project/tree/master/clang/bindings/python, to make the installation process easier."
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -992,13 +992,13 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [extras]
-app = ["tensorflow", "keras-tuner", "flask"]
+app = ["tensorflow", "keras-tuner", "flask", "libclang"]
 client = ["requests", "hermes.typeo"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "e522b27c5aff7caec400f922f5c5e6a13d7e00779c98e7c075cec9ac46e0c1e5"
+content-hash = "81080f54ee8f1ae9d3e8003dc5509d9f485d7fadb738b95b525ccda8dafd743f"
 
 [metadata.files]
 absl-py = [

@@ -13,7 +13,7 @@ python = ">=3.8,<3.10"
 # explicitly adding a libclang dependency for now
 # due to this transient issue
 # https://pythonissues.com/issues/2674747
-libclang = "<12.0"
+libclang = {version = "<12.0", optional = true}
 
 # app dependencies
 tensorflow = {version = "^2.6", optional = true}
@@ -25,7 +25,7 @@ requests = {version = "^2.26", optional = true}
 "hermes.typeo" = {version = "^0.1", optional = true}
 
 [tool.poetry.extras]
-app = ["tensorflow", "keras-tuner", "flask"]
+app = ["tensorflow", "keras-tuner", "flask", "libclang"]
 client = ["requests", "hermes.typeo"]
 
 [tool.poetry.group.test.dependencies]
