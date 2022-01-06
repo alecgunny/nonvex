@@ -10,6 +10,11 @@ nonvex = "nonvex.__init__:run_cli"
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
 
+# explicitly adding a libclang dependency for now
+# due to this transient issue
+# https://pythonissues.com/issues/2674747
+libclang = "<12.0.0"
+
 # app dependencies
 tensorflow = {version = "^2.6", optional = true}
 keras-tuner = {version = "^1.1", optional = true}
@@ -48,3 +53,7 @@ exclude = '''
 known_first_party = ["nonvex"]
 multi_line_output = 3
 include_trailing_comma = true
+
+[build-system]
+requires = ["poetry>=1.1"]
+build-backend = "poetry.masonry.api"
