@@ -1,63 +1,14 @@
 import importlib
 import inspect
+import os
 import re
 import shutil
 import sys
-from dataclasses import dataclass
-from functools import partial
-from secrets import token_hex
 from typing import Callable, Dict, List, Optional
 
-import requests
 from hermes.typeo import typeo
 
-
-@dataclass
-class NonvexClient:
-    url: str
-    worker_id: Optional[str] = None
-
-    def __post_init__(self):
-        if self.worker_id is None:
-            self.worker_id = token_hex(15)
-
-    def get_hyperparameters(self):
-        response = requests.get(f"{self.url}/hyperparameters")
-        response.raise_for_status()
-        return response.json()["hyperparameters"]
-
-    def _read_response(self, response):
-        response = response.json()
-        if response["id"] == "":
-            return None, None
-        return response["hyperparameters"], response["id"]
-
-    def start_worker(self):
-        response = requests.get(f"{self.url}/start/{self.worker_id}")
-        try:
-            response.raise_for_status()
-        except requests.HTTPError:
-            if response.code == 400:
-                raise RuntimeError(
-                    "Too many parallel workers in progress for "
-                    "hyperparameter server at URL {}".format(self.url)
-                )
-            raise
-
-        return self._read_response(response)
-
-    def end_trial(self, trial_id, result):
-        params = {"worker_id": self.worker_id}
-        params.update(result)
-
-        response = requests.get(f"{self.url}/end/{trial_id}", params=params)
-        response.raise_for_status()
-        return self._read_response(response)
-
-    def cancel_trial(self):
-        response = requests.get(f"{self.url}/cancel/{self.worker_id}")
-        response.raise_for_status()
-        return self._read_response(response)
+from nonvex.search.client import NonvexClient
 
 
 def get_train_fn(executable: str) -> Callable:
@@ -85,12 +36,47 @@ def get_train_fn(executable: str) -> Callable:
 def read_fn_kwargs(
     fn: Callable, args: List[str], hyperparameters: List[str]
 ) -> Dict:
+    """
+    Use `fn`'s signature to parse out any command line arguments
+    using `typeo`. Any arguments being search over as hyper-
+    parameters will be dropped.
+    """
+
+    # rather than ignore hyperparameters altogether,
+    # we want to keep them in the signature so that
+    # if they're contained in e.g. a typeo config,
+    # the parser won't complain about extra arguments.
+    # Instead, we'll just given them default values of
+    # `None` and place them at the end of the parameter
+    # list, then drop them after parsing.
     signature = inspect.signature(fn)
     parameters = []
+    hp_parameters = []
     for param_name, param in signature.parameters.items():
-        if param_name not in hyperparameters:
+        if param_name in hyperparameters:
+            # if this is a hyperparameter argument, replace
+            # it with a dummy parameter that default to None
+            # and record it in our `hp_parameters` list that
+            # we'll tack on to the end of `parameters`
+            param = inspect.Parameter(
+                name=param.name,
+                annotation=param.annotation,
+                default=None,
+                kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            )
+            hp_parameters.append(param)
+        else:
             parameters.append(param)
 
+    # put hyperparameters in the back since they
+    # have defaults now
+    parameters = parameters + hp_parameters
+
+    # create a dummy function that just returns
+    # the pass command line arguments as a dictionary,
+    # and give it the same signature as `fn` so that
+    # typeo knows the names and types of the arguments
+    # to process
     def spoof_fn(**kwargs):
         return kwargs
 
@@ -98,11 +84,22 @@ def read_fn_kwargs(
     spoof_fn.__doc__ = fn.__doc__
     spoof_fn.__name__ = fn.__name__
 
+    # parse the command line arguments with typeo and then
+    # pop out any hyperparameters that may have been
+    # in there because e.g. they were in a typeo config
     sys.argv = [None] + args
-    return typeo(spoof_fn)()
+    kwargs = typeo(spoof_fn)()
+    for hp in hyperparameters:
+        try:
+            kwargs.pop(hp)
+        except KeyError:
+            continue
+
+    # return these kwargs as a dict
+    return kwargs
 
 
-def search(
+def run_search(
     executable: str,
     url: str = "http://localhost:5000",
     worker_id: Optional[str] = None,
@@ -124,17 +121,22 @@ def search(
     """
 
     client = NonvexClient(url, worker_id)
+    os.environ["NV_WORKER_ID"] = client.worker_id
     hyperparameters = client.get_hyperparameters()
 
     fn = get_train_fn(executable)
-    kwargs = read_fn_kwargs(fn, args or [], hyperparameters)
-
-    train_fn = partial(fn, **kwargs)
     hyperparameters, trial_id = client.start_worker()
     results = []
     while trial_id is not None:
+        # do command line argument parsing inside of the
+        # loop in case we reference any nonvex environment
+        # variables in the arguments
+        os.environ["NV_TRIAL_ID"] = trial_id
+        kwargs = read_fn_kwargs(fn, args or [], hyperparameters)
+        kwargs.update(hyperparameters)
+
         try:
-            result = train_fn(**hyperparameters)
+            result = fn(**kwargs)
         except Exception:
             hyperparameters, trial_id = client.cancel_trial()
             if trial_id is None:

@@ -5,7 +5,7 @@ import pytest
 
 from nonvex.app import create_app
 
-scope = "module"
+scope = "function"
 
 
 @pytest.fixture(scope=scope, autouse=True)
@@ -18,10 +18,10 @@ hyperparameters.Float("learning_rate", 5e-6, 5e-4, sampling="log")
 hyperparameters.Choice("batch_size", [32, 64, 128])
 """
 
-    with open("nonvex.py", "w") as f:
+    with open("nonvex-hp.py", "w") as f:
         f.write(content)
     yield
-    os.remove("nonvex.py")
+    os.remove("nonvex-hp.py")
 
 
 @pytest.fixture(scope=scope)

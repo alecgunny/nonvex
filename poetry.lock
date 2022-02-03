@@ -1090,13 +1090,13 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [extras]
-app = ["tensorflow", "keras-tuner", "flask", "libclang"]
-client = ["requests", "hermes.typeo"]
+search = ["requests", "hermes.typeo"]
+serve = ["tensorflow", "keras-tuner", "flask", "libclang"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "0d9bc5e7ce0f885fc74c0aae8c463362b6278df576bacba661c68df3c824f04d"
+content-hash = "38e5435d106b8c28e5c62c100f7fd3caa9f8317cef1fb9015201c588e59d59e3"
 
 [metadata.files]
 absl-py = [

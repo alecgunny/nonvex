@@ -22,11 +22,11 @@ flask = {version = "^2.0", optional = true}
 
 # client dependencies
 requests = {version = "^2.26", optional = true}
-"hermes.typeo" = {version = "^0.1", optional = true}
+"hermes.typeo" = {version = "^0.1.4", optional = true}
 
 [tool.poetry.extras]
-app = ["tensorflow", "keras-tuner", "flask", "libclang"]
-client = ["requests", "hermes.typeo"]
+serve = ["tensorflow", "keras-tuner", "flask", "libclang"]
+search = ["requests", "hermes.typeo"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

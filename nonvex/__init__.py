@@ -1,24 +1,25 @@
 import argparse
 from inspect import signature
 
-from hermes.typeo.typeo import make_parser
+from hermes.typeo.typeo import CustomHelpFormatter, _parse_doc, make_parser
 
 
 def run_cli():
     parser = argparse.ArgumentParser(
         prog="Nonvex",
         conflict_handler="resolve",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=CustomHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     def add_subparser(fn):
+        description, _ = _parse_doc(fn)
         subparser = subparsers.add_parser(
             fn.__name__,
-            description=fn.__doc__.split("Args:")[0],
+            description=description,
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
-        return make_parser(fn, None, subparser, None)
+        return make_parser(fn, subparser)
 
     try:
         from .app import create_app
@@ -35,11 +36,11 @@ def run_cli():
         add_subparser(serve)
 
     try:
-        from .client import search
+        from .search import run_search
     except ImportError:
         pass
     else:
-        subparser, _ = add_subparser(search)
+        subparser, _ = add_subparser(run_search)
         for action in subparser._actions:
             if action.option_strings[0] == "--executable":
                 action.option_strings = []
@@ -53,7 +54,7 @@ def run_cli():
         serve(**args)
     else:
         args.pop("args")
-        search(**args, args=fn_args)
+        run_search(**args, args=fn_args)
 
 
 if __name__ == "__main__":
