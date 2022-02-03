@@ -6,12 +6,20 @@ from flask import Flask, make_response, request
 
 def _load_hyperparameters():
     locals_dict = {}
-    with open("nonvex.py", "r") as f:
-        exec(f.read(), {}, locals_dict)
+    try:
+        with open("nonvex-hp.py", "r") as f:
+            exec(f.read(), {}, locals_dict)
+    except FileNotFoundError as e:
+        if "nonvex-hp" in str(e):
+            raise ValueError(
+                "No 'nonvex-hp.py' config available locally"
+            )
+        raise
+
     try:
         return locals_dict["hyperparameters"]
     except KeyError:
-        raise ValueError("'nonvex.py' has no variable 'hyperparameters'")
+        raise ValueError("'nonvex-hp.py' has no variable 'hyperparameters'")
 
 
 @dataclass
