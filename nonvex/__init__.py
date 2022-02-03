@@ -12,14 +12,15 @@ def run_cli():
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    def add_subparser(fn):
+    def add_subparser(fn, name=None):
         description, _ = _parse_doc(fn)
         subparser = subparsers.add_parser(
-            fn.__name__,
+            name or fn.__name__,
             description=description,
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
-        return make_parser(fn, subparser)
+        make_parser(fn, subparser)
+        return subparser
 
     try:
         from .app import create_app
@@ -40,7 +41,7 @@ def run_cli():
     except ImportError:
         pass
     else:
-        subparser, _ = add_subparser(run_search)
+        subparser = add_subparser(run_search, "search")
         for action in subparser._actions:
             if action.option_strings[0] == "--executable":
                 action.option_strings = []
